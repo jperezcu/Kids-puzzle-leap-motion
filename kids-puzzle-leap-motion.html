@@ -1,0 +1,57 @@
+<html>
+<head>
+  <title>Swipe</title>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
+  <script>
+  $(document).ready(function() {
+    window.controller = new Leap.Controller({enableGestures: true});
+    var swiper = controller.gesture('swipe');
+    var tolerance = 50;
+    var cooloff = 300;
+
+    var level = 1;
+    var levelQty = 5;
+
+    var table[level] = [];
+    var pieces[level] = [];
+
+    var updateTable = function(){
+      $('#puzzleTable').clear();
+      $('#puzzleTable').append($('#table['+level+'])'));
+    }
+    var updatePieces = function(){
+      $('#puzzlePieces').clear();
+      $('#puzzlePieces').append($('#pieces['+level+'])'));
+    }
+    var updateLevel = function() {
+      updateTable();
+      updatePieces();
+    }
+    var slider = _.debounce(function(xDir) {
+      level += xDir;
+      level = (level + levelQty) % levelQty;
+      updateLevel();
+    }, cooloff);
+    swiper.update(function(g) {
+      if (Math.abs(g.translation()[0]) > tolerance || Math.abs(g.translation()[1]) > tolerance) {
+        var xDir = Math.abs(g.translation()[0]) > tolerance ? (g.translation()[0] > 0 ? -1 : 1) : 0;
+        slider(xDir);
+      }
+    });
+    controller.connect();
+    updateLevel();
+  })
+  </script>
+  <style>
+  /* css styles go here */
+  </style>
+</head>
+<body>
+  <button onclick="controller.connection.enableGestures(true);">Enable Gestures</button>
+  <button onclick="controller.connection.enableGestures(false);">Disable Gestures</button>
+  <div id="puzzleTable"></div>
+  <div id="puzzlePieces"></div>
+</body>
+</html>

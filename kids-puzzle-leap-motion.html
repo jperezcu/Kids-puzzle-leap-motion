@@ -12,24 +12,31 @@
     var cooloff = 300;
 
     var level = 1;
-    var levelQty = 5;
-
-    var table[level] = [];
-    var pieces[level] = [];
+    var prevLevel = 0;
+    var levelQty = 3;
 
     var updateTable = function(){
-      $('#puzzleTable').clear();
-      $('#puzzleTable').append($('#table['+level+'])'));
+      // $('#puzzleTable').clear();
+      // $('#puzzleTable').append($('#table-'+level+')'));
+      if(prevLevel != 0){
+        $('#table-'+prevLevel).hide();
+      }
+      $('#table-'+level).show();
     }
     var updatePieces = function(){
-      $('#puzzlePieces').clear();
-      $('#puzzlePieces').append($('#pieces['+level+'])'));
+      // $('#puzzlePieces').clear();
+      // $('#puzzlePieces').append($('#pieces-'+level+')'));
+  if(prevLevel != 0){
+        $('#table-'+prevLevel).hide();
+      }
+      $('#table-'+level).show();
     }
     var updateLevel = function() {
       updateTable();
       updatePieces();
     }
     var slider = _.debounce(function(xDir) {
+      prevLevel = level;
       level += xDir;
       level = (level + levelQty) % levelQty;
       updateLevel();
@@ -46,12 +53,39 @@
   </script>
   <style>
   /* css styles go here */
+  .table{
+    width: 500px;
+    height: 300px;
+    border: 1px solid;
+  }
+  .pieces{
+    display: inline-block;
+    width: 300px;
+    height: 300px;
+    border: 1px solid;
+  }
+  .hide{
+    display: none;
+  }
+  #table-1, #puzzle-1{
+    background-color: yellow;
+  }
+  #table-2, #puzzle-2{
+    background-color: red;
+  }
+  #table-3, #puzzle-3{
+    background-color: blue;
+  }
   </style>
 </head>
 <body>
   <button onclick="controller.connection.enableGestures(true);">Enable Gestures</button>
   <button onclick="controller.connection.enableGestures(false);">Disable Gestures</button>
-  <div id="puzzleTable"></div>
-  <div id="puzzlePieces"></div>
+  <div id="table-1" class="table"></div>
+  <div id="table-2" class="table hide"></div>
+  <div id="table-3" class="table hide"></div>
+  <div id="puzzle-1" class="pieces"></div>
+  <div id="puzzle-2" class="pieces hide"></div>
+  <div id="puzzle-3" class="pieces hide"></div>
 </body>
 </html>

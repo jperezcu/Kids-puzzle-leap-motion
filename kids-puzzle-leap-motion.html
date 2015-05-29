@@ -5,32 +5,23 @@
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
   <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
   <script>
-  var level = 0;
+    var level = 0;
     var prevLevel = -1;
     var levelQty = 3;
-  var nextLevel = function(){
+    
+    var nextLevel = function(){
       prevLevel = level;
       level += 1;
       level = (level + levelQty) % levelQty;
       updateLevel();
     }
-    var updateTable = function(){
+    var updateLevel = function() {
       if(prevLevel != -1){
         $('#table-'+prevLevel).addClass("hide");
-      }
-      $('#table-'+level).removeClass("hide");
-      console.log("show new table - level:"+level);
-    }
-    var updatePieces = function(){
-      if(prevLevel != -1){
         $('#pieces-'+prevLevel).addClass("hide");
       }
+      $('#table-'+level).removeClass("hide");
       $('#pieces-'+level).removeClass("hide");
-      console.log("show new pieces - level:"+level);
-    }
-    var updateLevel = function() {
-      updateTable();
-      updatePieces();
     }
 
   $(document).ready(function() {
@@ -55,7 +46,6 @@
   })
   </script>
   <style>
-  /* css styles go here */
   .table{
     display: inline-block;
     width: 500px;

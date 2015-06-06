@@ -1,20 +1,62 @@
 <html>
-  <head>
+<head>
   <meta charset="utf8">
   <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
-    
-    <style>
+
+  <style>
     body{
       padding: 0;
       margin: 0;
     }
-    #box {
-      width: 200px; 
-      height: 200px;
-      background-color: steelblue;
-      position: absolute;
-      top:300px;
+    #hole1 {
+      border: 1px solid red;
+      top:200px;
+      left:100px;
+    }
+    #hole2 {
+      border: 1px solid blue;
+      top:200px;
+      left:260px;
+    }
+    #hole3 {
+      border: 1px solid green;
+      top:360px;
+      left:100px;
+    }
+    #hole4 {
+      border: 1px solid yellow;
+      top:360px;
+      left:260px;
+    }
+    #piece1 {
+      background-color: red;
+      top:200px;
       left:700px;
+    }
+    #piece2 {
+      background-color: blue;
+      top:200px;
+      left:860px;
+    }
+    #piece3 {
+      background-color: green;
+      top:360px;
+      left:700px;
+    }
+    #piece4 {
+      background-color: yellow;
+      top:360px;
+      left:860px;
+    }
+    .square{
+      position: absolute;
+      width: 150px; 
+      height: 150px;
+    }
+    .selected{
+      opacity: 0.5;
+      width: 200px;
+      height: 200px;
     }
     #cursor {
       width: 10px; 
@@ -25,25 +67,118 @@
       left: 0;
     }
   </style>
-  </head>
-  <body>
+</head>
+<body>
     <!-- <p id="lmCoordinates">...</p>
     <p id="normalizedCoordinates">...</p>
     <p id="windowCoordinates">...</p> -->
-      <div id="box"></div>
-      <div id="cursor"></div>
-      <script>
-    var leapCoordinates = document.getElementById('lmCoordinates');
-    var normalizedCoordinates = document.getElementById('normalizedCoordinates');
-    var windowCoordinates = document.getElementById('windowCoordinates');
+    <div id="hole1" class="square"></div>
+    <div id="hole2" class="square"></div>
+    <div id="hole3" class="square"></div>
+    <div id="hole4" class="square"></div>
+    <div id="piece1" class="square"></div>
+    <div id="piece2" class="square"></div>
+    <div id="piece3" class="square"></div>
+    <div id="piece4" class="square"></div>
+    <div id="cursor"></div>
+    <script>
+      var leapCoordinates = document.getElementById('lmCoordinates');
+      var normalizedCoordinates = document.getElementById('normalizedCoordinates');
+      var windowCoordinates = document.getElementById('windowCoordinates');
 
+      var hole1 = document.getElementById("hole1");
+      var hole2 = document.getElementById("hole2");
+      var hole3 = document.getElementById("hole3");
+      var hole4 = document.getElementById("hole4");
+      var piece1 = document.getElementById("piece1");
+      var piece2 = document.getElementById("piece2");
+      var piece3 = document.getElementById("piece3");
+      var piece4 = document.getElementById("piece4");
 
+      var currentPiece = null;
+      var correctPieces = 0;
 
-    Leap.loop(function(frame){
-        var interactionBox = frame.interactionBox;
-        var cursor = document.getElementById("cursor");
-        
-        if(frame.pointables.length > 0){
+      function checkPieces(x,y,z){
+        if(x>piece1.offsetLeft && x<(piece1.offsetLeft+piece1.offsetWidth)){
+          if(y>piece1.offsetTop && y<(piece1.offsetTop+piece1.offsetHeight)){
+            // piece1
+            currentPiece = piece1;
+            piece1.className += ' selected';
+          } else if (y>piece3.offsetTop && y<(piece3.offsetTop+piece3.offsetHeight)){
+            // piece3
+            currentPiece = piece3;
+            piece3.className += ' selected';
+          }
+        } else if (x>piece2.offsetLeft && x<(piece2.offsetLeft+piece2.offsetWidth)){
+          if(y>piece2.offsetTop && y<(piece2.offsetTop+piece2.offsetHeight)){
+            // piece2
+            currentPiece = piece2;
+            piece2.className += ' selected';
+          } else if (y>piece4.offsetTop && y<(piece4.offsetTop+piece4.offsetHeight)){
+            // piece4
+            currentPiece = piece4;
+            piece4.className += ' selected';
+          }
+        }
+      }
+
+      function checkHoles(x,y,z){
+        if(x>hole1.offsetLeft && x<(hole1.offsetLeft+hole1.offsetWidth)){
+          if(y>hole1.offsetTop && y<(hole1.offsetTop+hole1.offsetHeight)){
+                // hole1
+                if(currentPiece == piece1){
+                  //place piece1 in hole1
+                  piece1.style.top = hole1.style.top;
+                  piece1.style.left = hole1.style.left;
+                  piece1.className = 'square';
+                  currentPiece = null;
+                  correctPieces += 1;
+                }
+              } else if (y>hole3.offsetTop && y<(hole3.offsetTop+hole3.offsetHeight)){
+                // hole3
+                if(currentPiece == piece3){
+                  //place piece3 in hole3
+                  piece3.style.top = hole3.style.top;
+                  piece3.style.left = hole3.style.left;
+                  piece3.className = 'square';
+                  currentPiece = null;
+                  correctPieces += 1;
+                }
+              }
+            } else if (x>hole2.offsetLeft && x<(hole2.offsetLeft+hole2.offsetWidth)){
+              if(y>hole2.offsetTop && y<(hole2.offsetTop+hole2.offsetHeight)){
+                // hole2
+                if(currentPiece == piece2){
+                  //place piece2 in hole2
+                  piece2.style.top = hole2.style.top;
+                  piece2.style.left = hole2.style.left;
+                  piece2.className = 'square';
+                  currentPiece = null;
+                  correctPieces += 1;
+                }
+              } else if (y>hole4.offsetTop && y<(hole4.offsetTop+hole4.offsetHeight)){
+                // hole4
+                if(currentPiece == piece4){
+                  //place piece4 in hole4
+                  piece4.style.top = hole4.style.top;
+                  piece4.style.left = hole4.style.left;
+                  piece4.className = 'square';
+                  currentPiece = null;
+                  correctPieces += 1;
+                }
+              }
+            }
+          }
+
+          function levelComplete() {
+            // change level
+          }
+
+          Leap.loop(function(frame){
+            var interactionBox = frame.interactionBox;
+            var cursor = document.getElementById("cursor");
+
+            if(frame.pointables.length > 0){
             //Leap coordinates
             var tipPosition = frame.pointables[0].tipPosition;
             // leapCoordinates.innerText = vectorToString(tipPosition,1);
@@ -54,40 +189,35 @@
 
             //Pixel coordinates in current window
             var windowPosition = [normalizedPosition[0] * window.innerWidth, 
-                                  window.innerHeight - (normalizedPosition[1] * window.innerHeight), 
-                                  0];
+            window.innerHeight - (normalizedPosition[1] * window.innerHeight), 
+            0];
             // windowCoordinates.innerText = vectorToString(windowPosition, 0);
             var x = windowPosition[0];
             var y = windowPosition[1];
             // console.log(x);
             // console.log(y);
 
+            cursor.style.marginLeft = x + "px";
+            cursor.style.marginTop = y + "px";
 
-              cursor.style.marginLeft = x + "px";
-              cursor.style.marginTop = y + "px";
+            if (currentPiece != null) {
+              checkHoles(x,y,z);
+            } else if (correctPieces < 4) {
+              checkPieces(x,y,z);
+            } else if (correntPieces == 4) {
+              levelComplete();
+            }    
+          }
+        });
 
-// console.log("box style left= "+box.style.left);
- // console.log(y>box.offsetTop && y<(box.offsetTop+box.offsetHeight));
-            if(x>box.offsetLeft && x<(box.offsetLeft+box.offsetWidth)){
-              if(y>box.offsetTop && y<(box.offsetTop+box.offsetHeight)){
-                box.style.backgroundColor="yellow";
-              } else {
-                box.style.backgroundColor="red";
-              }
-            } else {
-              box.style.backgroundColor="red";
-            }        
-        }
-    });
-
-    function vectorToString(vector, digits) {
-      if (typeof digits === "undefined") {
-        digits = 1;
-      }
-      return "(" + vector[0].toFixed(digits) + ", "
-                 + vector[1].toFixed(digits) + ", "
-                 + vector[2].toFixed(digits) + ")";
-    }
-    </script> 
-  </body>
+function vectorToString(vector, digits) {
+  if (typeof digits === "undefined") {
+    digits = 1;
+  }
+  return "(" + vector[0].toFixed(digits) + ", "
+   + vector[1].toFixed(digits) + ", "
+   + vector[2].toFixed(digits) + ")";
+}
+</script> 
+</body>
 </html>

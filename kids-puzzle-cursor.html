@@ -1,0 +1,93 @@
+<html>
+  <head>
+  <meta charset="utf8">
+  <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
+    
+    <style>
+    body{
+      padding: 0;
+      margin: 0;
+    }
+    #box {
+      width: 200px; 
+      height: 200px;
+      background-color: steelblue;
+      position: absolute;
+      top:300px;
+      left:700px;
+    }
+    #cursor {
+      width: 10px; 
+      height: 10px;
+      background-color: black;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+  </head>
+  <body>
+    <!-- <p id="lmCoordinates">...</p>
+    <p id="normalizedCoordinates">...</p>
+    <p id="windowCoordinates">...</p> -->
+      <div id="box"></div>
+      <div id="cursor"></div>
+      <script>
+    var leapCoordinates = document.getElementById('lmCoordinates');
+    var normalizedCoordinates = document.getElementById('normalizedCoordinates');
+    var windowCoordinates = document.getElementById('windowCoordinates');
+
+
+
+    Leap.loop(function(frame){
+        var interactionBox = frame.interactionBox;
+        var cursor = document.getElementById("cursor");
+        
+        if(frame.pointables.length > 0){
+            //Leap coordinates
+            var tipPosition = frame.pointables[0].tipPosition;
+            // leapCoordinates.innerText = vectorToString(tipPosition,1);
+            
+            //Normalized coordinates
+            var normalizedPosition = interactionBox.normalizePoint(tipPosition, true);
+            // normalizedCoordinates.innerText = vectorToString(normalizedPosition,4);
+
+            //Pixel coordinates in current window
+            var windowPosition = [normalizedPosition[0] * window.innerWidth, 
+                                  window.innerHeight - (normalizedPosition[1] * window.innerHeight), 
+                                  0];
+            // windowCoordinates.innerText = vectorToString(windowPosition, 0);
+            var x = windowPosition[0];
+            var y = windowPosition[1];
+            // console.log(x);
+            // console.log(y);
+
+
+              cursor.style.marginLeft = x + "px";
+              cursor.style.marginTop = y + "px";
+
+// console.log("box style left= "+box.style.left);
+ // console.log(y>box.offsetTop && y<(box.offsetTop+box.offsetHeight));
+            if(x>box.offsetLeft && x<(box.offsetLeft+box.offsetWidth)){
+              if(y>box.offsetTop && y<(box.offsetTop+box.offsetHeight)){
+                box.style.backgroundColor="yellow";
+              } else {
+                box.style.backgroundColor="red";
+              }
+            } else {
+              box.style.backgroundColor="red";
+            }        
+        }
+    });
+
+    function vectorToString(vector, digits) {
+      if (typeof digits === "undefined") {
+        digits = 1;
+      }
+      return "(" + vector[0].toFixed(digits) + ", "
+                 + vector[1].toFixed(digits) + ", "
+                 + vector[2].toFixed(digits) + ")";
+    }
+    </script> 
+  </body>
+</html>

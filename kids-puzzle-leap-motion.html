@@ -1,9 +1,13 @@
 <html>
 <head>
   <title>Swipe</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="stylesheet" href="http://wilkesalex.github.io/leapstrap/dist/css/leapstrap.css" /> -->
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <!-- <script src="http://code.jquery.com/jquery-1.10.2.js"></script> -->
   <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
+  <!-- <script src="http://js.leapmotion.com/0.3.0-beta3/leap.js"></script> -->
   <script>
     var level = 0;
     var prevLevel = -1;
@@ -82,5 +86,22 @@
   <div id="pieces-1" class="pieces hide"></div>
   <div id="pieces-2" class="pieces hide"></div><br/><br/>
   <button onclick="nextLevel();">Next level</button>
+  <br><br><br>
+  <button type="button" class="btn leap-interactive" onclick="nextLevel();">I can be clicked</button>
+  <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <!-- <script src="http://wilkesalex.github.io/leapstrap/dist/js/leapstrap.js"></script>
+<script>
+LeapManager.init({
+enableMetaGestures: true,
+enableDefaultMetaGestureActions: true,
+maxCursors:1,
+enableHoverTap: true,
+enablePressDown: true,
+enableScrollbarScrolling: true,
+});
+</script> -->
 </body>
 </html>

@@ -52,6 +52,20 @@
             background-size: contain;
             position: absolute;
         }
+
+        #congrats{
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            background-image: url('images/congrats.gif');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center; 
+            display: none;
+        }
         
         h3 {
             text-align: center;
@@ -71,6 +85,7 @@
     <div id="piece3" class="piece"></div>
     <div id="piece4" class="piece"></div>
     <div id="cursor"></div>
+    <div id="congrats"></div>
     <script>
         var hole1 = document.getElementById("hole1");
         var hole2 = document.getElementById("hole2");
@@ -81,6 +96,7 @@
         var piece3 = document.getElementById("piece3");
         var piece4 = document.getElementById("piece4");
         var cursor = document.getElementById("cursor");
+        var congrats = document.getElementById("congrats");
 
         var levelQty = 4;
         var pieceQty = 4;
@@ -296,8 +312,12 @@
                     //Check whether there's a piece to select in the current hovering spot
                     checkPieces(x, y);
                 } else if (correntPieces == pieceQty) {
-                    //Go to next level
-                    nextLevel();
+                    congrats.style.display = "block";
+                    setTimeout(function(){
+                        congrats.style.display = "none";
+                        //Go to next level
+                        nextLevel();
+                    },3000); 
                 }
             }
         });

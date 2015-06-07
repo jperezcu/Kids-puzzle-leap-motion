@@ -15,15 +15,9 @@
         .hole{
             border: 1px solid grey;
         }
-        
-        .piece {
-            background-size: calc(210px *2) calc(210px *2);
-        }
 
         .hole, .piece {
             position: absolute;
-            width: 210px;
-            height: 210px;
         }
 
         #piece1 {
@@ -46,21 +40,14 @@
             opacity: 0.5;
             -webkit-filter: drop-shadow(0px 0px 50px #222);
             filter: drop-shadow(0px 0px 50px #222);
-            width: 250px;
-            height: 250px;
         }
         
         #cursor {
-            width: 150px;
-            height: 122.25px;
             opacity: 0.8;
             -webkit-filter: drop-shadow(0px 0px 10px #222);
             filter: drop-shadow(0px 0px 10px #222);
             background-image: url('images/cursor.png');
-            background-size: cover;
             position: absolute;
-            top: 0;
-            left: 0;
         }
         
         h3 {
@@ -100,13 +87,16 @@
 
         var correctPieces = 0;
 
-        var holesTopMargin = 150;
-        var holesLeftMargin = 150;
-        var piecesTopMargin = 150;
-        var piecesLeftMargin = 700;
-        var pieceWidth = 420/2;
-        var pieceHeight = 420/2;
+        var imageWidth = window.innerWidth * .4;
+        var imageHeight = window.innerHeight * .6;
+        var pieceWidth = imageWidth/2;
+        var pieceHeight = imageHeight/2;
         var padding = 10;
+
+        var holesTopMargin = (window.innerHeight/2) - pieceHeight - padding;//150
+        var holesLeftMargin = (window.innerWidth/2) - pieceWidth*2 - padding;//150
+        var piecesTopMargin = (window.innerHeight/2) - pieceHeight - padding;//150
+        var piecesLeftMargin = (window.innerWidth/2) + padding;//700
 
         function loadHoles(){
             hole1.style.top = holesTopMargin + "px";
@@ -143,6 +133,22 @@
 
             scrambledPieces[3].style.top = piecesTopMargin + pieceHeight + padding + "px";
             scrambledPieces[3].style.left = piecesLeftMargin + pieceWidth + padding + "px";
+        }
+
+        function updateCss() {
+            cursor.style.width = window.innerWidth * .14 + "px";
+            cursor.style.height = window.innerHeight * .2 + "px";
+            cursor.style.backgroundSize = "100% 100%";
+            var pieces = document.getElementsByClassName('piece');
+            var holes = document.getElementsByClassName('hole');
+            if (pieces != null && pieces.length > 0 && holes != null && holes.length > 0 && pieces.length == holes.length)
+                for (var i = 0; i < pieces.length; i++) {
+                    pieces[i].style.backgroundSize = imageWidth + "px " + imageHeight + "px";
+                    pieces[i].style.width = pieceWidth + "px";
+                    pieces[i].style.height = pieceHeight + "px";
+                    holes[i].style.width = pieceWidth + "px";
+                    holes[i].style.height = pieceHeight + "px";
+                }
         }
 
         function shuffleArray(o) {
@@ -283,8 +289,8 @@
                     checkHoles(x, y);
                 } else if (correctPieces < pieceQty) {
                     //Show selected piece underneath cursor
-                    currentPiece.style.marginLeft = Math.round(x / 2) + "px";
-                    currentPiece.style.marginTop = Math.round(y / 2) + "px";
+                    currentPiece.style.marginLeft = (x - Math.round(pieceWidth / 2)) + "px";
+                    currentPiece.style.marginTop = (y - Math.round(pieceHeight / 2)) + "px";
                     //Check whether there's a piece to select in the current hovering spot
                     checkPieces(x, y);
                 } else if (correntPieces == pieceQty) {
@@ -297,6 +303,7 @@
         window.onload = function() {
             loadHoles();
             loadPieces();
+            updateCss();
         }
     </script>
 </body>

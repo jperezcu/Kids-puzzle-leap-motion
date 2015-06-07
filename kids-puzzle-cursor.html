@@ -57,22 +57,12 @@
     #cursor {
       width: 150px; 
       height: 122.25px;
+      opacity: 0.8;
       background-image: url('images/cursor.png');
       background-size: cover;
       position: absolute;
       top: 0;
       left: 0;
-    }
-    #cursorAlt {
-      width: 150px;
-      height: 152px;
-      opacity: 0.8;
-      background-image: url('images/cursorAlt.png');
-      background-size: cover;
-      position: absolute;
-      top: 200;
-      left: 0; 
-      visibility: hidden;
     }
     h3{
       text-align: center;
@@ -94,7 +84,6 @@
     <div id="piece3" class="square"></div>
     <div id="piece4" class="square"></div>
     <div id="cursor"></div>
-    <div id="cursorAlt"></div>
     <script>
       // var leapCoordinates = document.getElementById('lmCoordinates');
       // var normalizedCoordinates = document.getElementById('normalizedCoordinates');
@@ -113,7 +102,6 @@
       var piece4 = document.getElementById("piece4");
       piece4.index = 4;
       var cursor = document.getElementById("cursor");
-      var cursorAlt = document.getElementById("cursorAlt");
 
       var currentPiece = null;
       var correctPieces = 0;
@@ -144,8 +132,7 @@
       function selectPiece(piece){
         currentPiece = piece;
         piece.className += ' selected';
-        cursor.style.visibility = "hidden";
-        cursorAlt.style.visibility = "visible";
+        cursor.style.backgroundImage = "url('images/cursorAlt.png')";
       }
 
       function checkHoles(x,y,z){
@@ -182,9 +169,7 @@
             piece.className = 'square'; //leave only this css class
             currentPiece = null;
             correctPieces += 1;
-            cursorAlt.style.visibility = "hidden";
-            cursor.style.visibility = "visible";
-
+            cursor.style.backgroundImage = "url('images/cursor.png')";
           }
 
           function levelComplete() {
@@ -246,15 +231,12 @@
             var x = windowPosition[0];
             var y = windowPosition[1];
             
+            cursor.style.marginLeft = x + "px";
+            cursor.style.marginTop = y + "px";
             
-
             if (currentPiece != null) {
-              cursor.style.marginLeft = x + "px";
-              cursor.style.marginTop = y + "px";
               checkHoles(x,y,z);
             } else if (correctPieces < 4) {
-              cursorAlt.style.marginLeft = x + "px";
-              cursorAlt.style.marginTop = y + "px";
               currentPiece.style.marginLeft = Math.round(x/2) + "px";
               currentPiece.style.marginTop = Math.round(y/2) + "px";
               checkPieces(x,y,z);
@@ -266,7 +248,7 @@
 
 window.onload = function() {
   loadPieces();
-}
+} 
 
 // function vectorToString(vector, digits) {
 //   if (typeof digits === "undefined") {

@@ -12,44 +12,20 @@
             margin: 0;
         }
         
-        #hole1 {
+        .hole{
             border: 1px solid grey;
-            top: 150px;
-            left: 150px;
-        }
-        
-        #hole2 {
-            border: 1px solid grey;
-            top: 150px;
-            left: calc(150px + 210px + 10px);
-            /* 210px image width + 10px horizontal margin */
-        }
-        
-        #hole3 {
-            border: 1px solid grey;
-            top: calc(150px + 210px + 10px);
-            /* 210px image height + 10px vertical margin */
-            left: 150px;
-        }
-        
-        #hole4 {
-            border: 1px solid grey;
-            top: calc(150px + 210px + 10px);
-            /* 210px image height + 10px vertical margin */
-            left: calc(150px + 210px + 10px);
-            /* 210px image width + 10px horizontal margin */
         }
         
         .piece {
             background-size: calc(210px *2) calc(210px *2);
         }
-        
-        .square {
+
+        .hole, .piece {
             position: absolute;
             width: 210px;
             height: 210px;
         }
-        
+
         #piece1 {
             background-position: 0 0;
         }
@@ -95,24 +71,17 @@
 </head>
 
 <body>
-    <!-- <p id="lmCoordinates">...</p>
-    <p id="normalizedCoordinates">...</p>
-    <p id="windowCoordinates">...</p> -->
     <h3>Hover over a piece to select it, then hover right where it should go<br/>Swipe left or right to switch between puzzles</h3>
-    <div id="hole1" class="square"></div>
-    <div id="hole2" class="square"></div>
-    <div id="hole3" class="square"></div>
-    <div id="hole4" class="square"></div>
-    <div id="piece1" class="square piece"></div>
-    <div id="piece2" class="square piece"></div>
-    <div id="piece3" class="square piece"></div>
-    <div id="piece4" class="square piece"></div>
+    <div id="hole1" class="hole"></div>
+    <div id="hole2" class="hole"></div>
+    <div id="hole3" class="hole"></div>
+    <div id="hole4" class="hole"></div>
+    <div id="piece1" class="piece"></div>
+    <div id="piece2" class="piece"></div>
+    <div id="piece3" class="piece"></div>
+    <div id="piece4" class="piece"></div>
     <div id="cursor"></div>
     <script>
-        // var leapCoordinates = document.getElementById('lmCoordinates');
-        // var normalizedCoordinates = document.getElementById('normalizedCoordinates');
-        // var windowCoordinates = document.getElementById('windowCoordinates');
-
         var hole1 = document.getElementById("hole1");
         var hole2 = document.getElementById("hole2");
         var hole3 = document.getElementById("hole3");
@@ -130,6 +99,56 @@
         var currentPiece = null;
 
         var correctPieces = 0;
+
+        var holesTopMargin = 150;
+        var holesLeftMargin = 150;
+        var piecesTopMargin = 150;
+        var piecesLeftMargin = 700;
+        var pieceWidth = 420/2;
+        var pieceHeight = 420/2;
+        var padding = 10;
+
+        function loadHoles(){
+            hole1.style.top = holesTopMargin + "px";
+            hole1.style.left = holesLeftMargin + "px";
+
+            hole2.style.top = holesTopMargin + "px";
+            hole2.style.left = holesLeftMargin + pieceWidth + padding + "px";
+
+            hole3.style.top = holesTopMargin + pieceHeight + padding + "px";
+            hole3.style.left = holesLeftMargin + "px";
+
+            hole4.style.top = holesTopMargin + pieceHeight + padding + "px";
+            hole4.style.left = holesLeftMargin + pieceWidth + padding + "px";
+        }
+
+        function loadPieces() {
+            var pieces = document.getElementsByClassName('piece');
+            if (pieces.length > 0 && currentLevel <= levelQty)
+                for (var i = 0; i < pieces.length; i++) {
+                    pieces[i].style.backgroundImage = "url('images/puzzles/" + currentLevel + ".jpg')";
+                }
+
+            var scrambledPieces = [piece1, piece2, piece3, piece4];
+            shuffleArray(scrambledPieces);
+
+            scrambledPieces[0].style.top = piecesTopMargin + "px";
+            scrambledPieces[0].style.left = piecesLeftMargin + "px";
+
+            scrambledPieces[1].style.top = piecesTopMargin + "px";
+            scrambledPieces[1].style.left = piecesLeftMargin + pieceWidth + padding + "px";
+
+            scrambledPieces[2].style.top = piecesTopMargin + pieceHeight + padding + "px";
+            scrambledPieces[2].style.left = piecesLeftMargin + "px";
+
+            scrambledPieces[3].style.top = piecesTopMargin + pieceHeight + padding + "px";
+            scrambledPieces[3].style.left = piecesLeftMargin + pieceWidth + padding + "px";
+        }
+
+        function shuffleArray(o) {
+            for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+            return o;
+        }
 
         function checkPieces(x, y) {
             if (x > piece1.offsetLeft && x < (piece1.offsetLeft + piece1.offsetWidth)) {
@@ -188,7 +207,7 @@
         function placePieceOverHole(piece, hole) {
             piece.style.top = hole.style.top;
             piece.style.left = hole.style.left;
-            piece.className = 'square piece'; //leave only this css classes
+            piece.className = 'piece'; //leave only this css classes
             currentPiece = null;
             correctPieces += 1;
             cursor.style.backgroundImage = "url('images/cursor.png')";
@@ -211,34 +230,6 @@
             currentPiece = null;
             correctPieces = 0;
             loadPieces();
-        }
-
-        function loadPieces() {
-            var pieces = document.getElementsByClassName('piece');
-            if (pieces.length > 0 && currentLevel <= levelQty)
-                for (var i = 0; i < pieces.length; i++) {
-                    pieces[i].style.backgroundImage = "url('images/puzzles/" + currentLevel + ".jpg')";
-                }
-
-            var scrambledPieces = [piece1, piece2, piece3, piece4];
-            shuffleArray(scrambledPieces);
-
-            scrambledPieces[0].style.top = 150 + "px";
-            scrambledPieces[0].style.left = 700 + "px";
-
-            scrambledPieces[1].style.top = 150 + "px";
-            scrambledPieces[1].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
-
-            scrambledPieces[2].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
-            scrambledPieces[2].style.left = 700 + "px";
-
-            scrambledPieces[3].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
-            scrambledPieces[3].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
-        }
-
-        function shuffleArray(o) {
-            for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-            return o;
         }
 
         var controllerOptions = {
@@ -290,13 +281,13 @@
                 if (currentPiece != null) {
                     //Check whether the selected piece should go in the current hovering spot
                     checkHoles(x, y);
-                } else if (correctPieces < 4) {
+                } else if (correctPieces < pieceQty) {
                     //Show selected piece underneath cursor
                     currentPiece.style.marginLeft = Math.round(x / 2) + "px";
                     currentPiece.style.marginTop = Math.round(y / 2) + "px";
                     //Check whether there's a piece to select in the current hovering spot
                     checkPieces(x, y);
-                } else if (correntPieces == 4) {
+                } else if (correntPieces == pieceQty) {
                     //Go to next level
                     nextLevel();
                 }
@@ -304,6 +295,7 @@
         });
 
         window.onload = function() {
+            loadHoles();
             loadPieces();
         }
     </script>

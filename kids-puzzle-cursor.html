@@ -9,62 +9,74 @@
       margin: 0;
     }
     #hole1 {
-      border: 1px solid red;
-      top:200px;
-      left:100px;
+      border: 1px solid grey;
+      top:150px;
+      left:150px;
     }
     #hole2 {
-      border: 1px solid blue;
-      top:200px;
-      left:260px;
+      border: 1px solid grey;
+      top: 150px;
+      left: calc(150px + 210px + 10px);  /* 210px image width + 10px horizontal margin */
     }
     #hole3 {
-      border: 1px solid green;
-      top:360px;
-      left:100px;
+      border: 1px solid grey;
+      top: calc(150px + 210px + 10px);  /* 210px image height + 10px vertical margin */
+      left:150px;
     }
     #hole4 {
-      border: 1px solid yellow;
-      top:360px;
-      left:260px;
+      border: 1px solid grey;
+      top: calc(150px + 210px + 10px);  /* 210px image height + 10px vertical margin */
+      left: calc(150px + 210px + 10px);  /* 210px image width + 10px horizontal margin */
     }
     #piece1 {
       background-color: red;
-      top:200px;
+      top:150px;
       left:700px;
     }
     #piece2 {
       background-color: blue;
-      top:200px;
-      left:860px;
     }
     #piece3 {
       background-color: green;
-      top:360px;
-      left:700px;
     }
     #piece4 {
       background-color: yellow;
-      top:360px;
-      left:860px;
     }
     .square{
       position: absolute;
-      width: 150px; 
-      height: 150px;
+      width: 210px; 
+      height: 210px;
+      background-size: cover;
     }
     .selected{
       opacity: 0.5;
-      width: 200px;
-      height: 200px;
+      box-shadow: 0px 0px 50px #000;
+      width: 250px;
+      height: 250px;
     }
     #cursor {
-      width: 10px; 
-      height: 10px;
-      background-color: black;
+      width: 150px; 
+      height: 122.25px;
+      background-image: url('images/cursor.png');
+      background-size: cover;
       position: absolute;
       top: 0;
       left: 0;
+    }
+    #cursorAlt {
+      width: 150px;
+      height: 152px;
+      opacity: 0.8;
+      background-image: url('images/cursorAlt.png');
+      background-size: cover;
+      position: absolute;
+      top: 200;
+      left: 0; 
+      visibility: hidden;
+    }
+    h3{
+      text-align: center;
+      font-family: "Comic Sans MS";
     }
   </style>
 </head>
@@ -72,6 +84,7 @@
     <!-- <p id="lmCoordinates">...</p>
     <p id="normalizedCoordinates">...</p>
     <p id="windowCoordinates">...</p> -->
+    <h3>Hover over a piece to select it, then hover right where it should go<br/>Swipe left or right to switch between puzzles</h3>
     <div id="hole1" class="square"></div>
     <div id="hole2" class="square"></div>
     <div id="hole3" class="square"></div>
@@ -81,45 +94,58 @@
     <div id="piece3" class="square"></div>
     <div id="piece4" class="square"></div>
     <div id="cursor"></div>
+    <div id="cursorAlt"></div>
     <script>
-      var leapCoordinates = document.getElementById('lmCoordinates');
-      var normalizedCoordinates = document.getElementById('normalizedCoordinates');
-      var windowCoordinates = document.getElementById('windowCoordinates');
+      // var leapCoordinates = document.getElementById('lmCoordinates');
+      // var normalizedCoordinates = document.getElementById('normalizedCoordinates');
+      // var windowCoordinates = document.getElementById('windowCoordinates');
 
       var hole1 = document.getElementById("hole1");
       var hole2 = document.getElementById("hole2");
       var hole3 = document.getElementById("hole3");
       var hole4 = document.getElementById("hole4");
       var piece1 = document.getElementById("piece1");
+      piece1.index = 1;
       var piece2 = document.getElementById("piece2");
+      piece2.index = 2;
       var piece3 = document.getElementById("piece3");
+      piece3.index = 3;
       var piece4 = document.getElementById("piece4");
+      piece4.index = 4;
+      var cursor = document.getElementById("cursor");
+      var cursorAlt = document.getElementById("cursorAlt");
 
       var currentPiece = null;
       var correctPieces = 0;
+
+      var currentLevel = 1;
+      var levelQty = 3;
 
       function checkPieces(x,y,z){
         if(x>piece1.offsetLeft && x<(piece1.offsetLeft+piece1.offsetWidth)){
           if(y>piece1.offsetTop && y<(piece1.offsetTop+piece1.offsetHeight)){
             // piece1
-            currentPiece = piece1;
-            piece1.className += ' selected';
+            selectPiece(piece1);
           } else if (y>piece3.offsetTop && y<(piece3.offsetTop+piece3.offsetHeight)){
             // piece3
-            currentPiece = piece3;
-            piece3.className += ' selected';
+            selectPiece(piece3);
           }
         } else if (x>piece2.offsetLeft && x<(piece2.offsetLeft+piece2.offsetWidth)){
           if(y>piece2.offsetTop && y<(piece2.offsetTop+piece2.offsetHeight)){
             // piece2
-            currentPiece = piece2;
-            piece2.className += ' selected';
+            selectPiece(piece2);
           } else if (y>piece4.offsetTop && y<(piece4.offsetTop+piece4.offsetHeight)){
             // piece4
-            currentPiece = piece4;
-            piece4.className += ' selected';
+            selectPiece(piece4);
           }
         }
+      }
+
+      function selectPiece(piece){
+        currentPiece = piece;
+        piece.className += ' selected';
+        cursor.style.visibility = "hidden";
+        cursorAlt.style.visibility = "visible";
       }
 
       function checkHoles(x,y,z){
@@ -127,56 +153,81 @@
           if(y>hole1.offsetTop && y<(hole1.offsetTop+hole1.offsetHeight)){
                 // hole1
                 if(currentPiece == piece1){
-                  //place piece1 in hole1
-                  piece1.style.top = hole1.style.top;
-                  piece1.style.left = hole1.style.left;
-                  piece1.className = 'square';
-                  currentPiece = null;
-                  correctPieces += 1;
+                  placePieceOverHole(piece1,hole1);
                 }
               } else if (y>hole3.offsetTop && y<(hole3.offsetTop+hole3.offsetHeight)){
                 // hole3
                 if(currentPiece == piece3){
-                  //place piece3 in hole3
-                  piece3.style.top = hole3.style.top;
-                  piece3.style.left = hole3.style.left;
-                  piece3.className = 'square';
-                  currentPiece = null;
-                  correctPieces += 1;
+                  placePieceOverHole(piece3,hole3);
                 }
               }
             } else if (x>hole2.offsetLeft && x<(hole2.offsetLeft+hole2.offsetWidth)){
               if(y>hole2.offsetTop && y<(hole2.offsetTop+hole2.offsetHeight)){
                 // hole2
                 if(currentPiece == piece2){
-                  //place piece2 in hole2
-                  piece2.style.top = hole2.style.top;
-                  piece2.style.left = hole2.style.left;
-                  piece2.className = 'square';
-                  currentPiece = null;
-                  correctPieces += 1;
+                  placePieceOverHole(piece2,hole2);
                 }
               } else if (y>hole4.offsetTop && y<(hole4.offsetTop+hole4.offsetHeight)){
                 // hole4
                 if(currentPiece == piece4){
-                  //place piece4 in hole4
-                  piece4.style.top = hole4.style.top;
-                  piece4.style.left = hole4.style.left;
-                  piece4.className = 'square';
-                  currentPiece = null;
-                  correctPieces += 1;
+                  placePieceOverHole(piece4,hole4);
                 }
               }
             }
           }
 
+          function placePieceOverHole(piece,hole){
+            piece.style.top = hole.style.top;
+            piece.style.left = hole.style.left;
+            piece.className = 'square'; //leave only this css class
+            currentPiece = null;
+            correctPieces += 1;
+            cursorAlt.style.visibility = "hidden";
+            cursor.style.visibility = "visible";
+
+          }
+
           function levelComplete() {
-            // change level
+            // go to next level
+            var nextLevel = (currentLevel == levelQty) ? 1 : currentLevel+1;
+            goToLevel(nextLevel);
+          }
+
+          function goToLevel(newLevel){
+            currentLevel = newLevel;
+            currentPiece = null;
+            correctPieces = 0;
+            loadPieces();
+          }
+
+          function loadPieces(){
+            var scrambledPieces = [piece1, piece2, piece3, piece4];
+            shuffleArray(scrambledPieces);
+
+            scrambledPieces[0].style.top = 150 + "px";
+            scrambledPieces[0].style.left = 700 + "px";
+            scrambledPieces[0].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[0].index+".jpg')";
+
+            scrambledPieces[1].style.top = 150 + "px";
+            scrambledPieces[1].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
+            scrambledPieces[1].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[1].index+".jpg')";
+
+            scrambledPieces[2].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
+            scrambledPieces[2].style.left = 700 + "px";
+            scrambledPieces[2].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[2].index+".jpg')";
+
+            scrambledPieces[3].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
+            scrambledPieces[3].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
+            scrambledPieces[3].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[3].index+".jpg')";
+          }
+
+          function shuffleArray(o){
+            for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+              return o;
           }
 
           Leap.loop(function(frame){
             var interactionBox = frame.interactionBox;
-            var cursor = document.getElementById("cursor");
 
             if(frame.pointables.length > 0){
             //Leap coordinates
@@ -194,15 +245,18 @@
             // windowCoordinates.innerText = vectorToString(windowPosition, 0);
             var x = windowPosition[0];
             var y = windowPosition[1];
-            // console.log(x);
-            // console.log(y);
-
-            cursor.style.marginLeft = x + "px";
-            cursor.style.marginTop = y + "px";
+            
+            
 
             if (currentPiece != null) {
+              cursor.style.marginLeft = x + "px";
+              cursor.style.marginTop = y + "px";
               checkHoles(x,y,z);
             } else if (correctPieces < 4) {
+              cursorAlt.style.marginLeft = x + "px";
+              cursorAlt.style.marginTop = y + "px";
+              currentPiece.style.marginLeft = Math.round(x/2) + "px";
+              currentPiece.style.marginTop = Math.round(y/2) + "px";
               checkPieces(x,y,z);
             } else if (correntPieces == 4) {
               levelComplete();
@@ -210,14 +264,18 @@
           }
         });
 
-function vectorToString(vector, digits) {
-  if (typeof digits === "undefined") {
-    digits = 1;
-  }
-  return "(" + vector[0].toFixed(digits) + ", "
-   + vector[1].toFixed(digits) + ", "
-   + vector[2].toFixed(digits) + ")";
+window.onload = function() {
+  loadPieces();
 }
+
+// function vectorToString(vector, digits) {
+//   if (typeof digits === "undefined") {
+//     digits = 1;
+//   }
+//   return "(" + vector[0].toFixed(digits) + ", "
+//    + vector[1].toFixed(digits) + ", "
+//    + vector[2].toFixed(digits) + ")";
+// }
 </script> 
 </body>
 </html>

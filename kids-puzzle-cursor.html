@@ -28,20 +28,6 @@
       top: calc(150px + 210px + 10px);  /* 210px image height + 10px vertical margin */
       left: calc(150px + 210px + 10px);  /* 210px image width + 10px horizontal margin */
     }
-    #piece1 {
-      background-color: red;
-      top:150px;
-      left:700px;
-    }
-    #piece2 {
-      background-color: blue;
-    }
-    #piece3 {
-      background-color: green;
-    }
-    #piece4 {
-      background-color: yellow;
-    }
     .square{
       position: absolute;
       width: 210px; 
@@ -50,7 +36,8 @@
     }
     .selected{
       opacity: 0.5;
-      box-shadow: 0px 0px 50px #000;
+      -webkit-filter: drop-shadow(0px 0px 50px #222);
+      filter:         drop-shadow(0px 0px 50px #222);
       width: 250px;
       height: 250px;
     }
@@ -58,6 +45,8 @@
       width: 150px; 
       height: 122.25px;
       opacity: 0.8;
+      -webkit-filter: drop-shadow(0px 0px 10px #222);
+      filter:         drop-shadow(0px 0px 10px #222);
       background-image: url('images/cursor.png');
       background-size: cover;
       position: absolute;
@@ -233,7 +222,7 @@
             
             cursor.style.marginLeft = x + "px";
             cursor.style.marginTop = y + "px";
-            
+
             if (currentPiece != null) {
               checkHoles(x,y,z);
             } else if (correctPieces < 4) {

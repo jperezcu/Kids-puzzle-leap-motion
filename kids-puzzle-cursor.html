@@ -28,36 +28,54 @@
       top: calc(150px + 210px + 10px);  /* 210px image height + 10px vertical margin */
       left: calc(150px + 210px + 10px);  /* 210px image width + 10px horizontal margin */
     }
-    .square{
-      position: absolute;
-      width: 210px; 
-      height: 210px;
-      background-size: cover;
-    }
-    .selected{
-      opacity: 0.5;
-      -webkit-filter: drop-shadow(0px 0px 50px #222);
-      filter:         drop-shadow(0px 0px 50px #222);
-      width: 250px;
-      height: 250px;
-    }
-    #cursor {
-      width: 150px; 
-      height: 122.25px;
-      opacity: 0.8;
-      -webkit-filter: drop-shadow(0px 0px 10px #222);
-      filter:         drop-shadow(0px 0px 10px #222);
-      background-image: url('images/cursor.png');
-      background-size: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    h3{
-      text-align: center;
-      font-family: "Comic Sans MS";
-    }
-  </style>
+    .piece {
+     background-size: calc(210px *2) calc(210px *2);
+   }
+   .square{
+    position: absolute;
+    width: 210px; 
+    height: 210px;
+  }
+
+  #piece1 {
+   background-position:0 0;
+ }
+
+ #piece2 {
+   background-position:100% 0;
+ }
+
+ #piece3 {
+   background-position:0% 100%;
+ }
+
+ #piece4 {
+   background-position:100% 100%;
+ }
+ .selected{
+  opacity: 0.5;
+  -webkit-filter: drop-shadow(0px 0px 50px #222);
+  filter:         drop-shadow(0px 0px 50px #222);
+  width: 250px;
+  height: 250px;
+}
+#cursor {
+  width: 150px; 
+  height: 122.25px;
+  opacity: 0.8;
+  -webkit-filter: drop-shadow(0px 0px 10px #222);
+  filter:         drop-shadow(0px 0px 10px #222);
+  background-image: url('images/cursor.png');
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+h3{
+  text-align: center;
+  font-family: "Comic Sans MS";
+}
+</style>
 </head>
 <body>
     <!-- <p id="lmCoordinates">...</p>
@@ -68,10 +86,10 @@
     <div id="hole2" class="square"></div>
     <div id="hole3" class="square"></div>
     <div id="hole4" class="square"></div>
-    <div id="piece1" class="square"></div>
-    <div id="piece2" class="square"></div>
-    <div id="piece3" class="square"></div>
-    <div id="piece4" class="square"></div>
+    <div id="piece1" class="square piece"></div>
+    <div id="piece2" class="square piece"></div>
+    <div id="piece3" class="square piece"></div>
+    <div id="piece4" class="square piece"></div>
     <div id="cursor"></div>
     <script>
       // var leapCoordinates = document.getElementById('lmCoordinates');
@@ -83,13 +101,9 @@
       var hole3 = document.getElementById("hole3");
       var hole4 = document.getElementById("hole4");
       var piece1 = document.getElementById("piece1");
-      piece1.index = 1;
       var piece2 = document.getElementById("piece2");
-      piece2.index = 2;
       var piece3 = document.getElementById("piece3");
-      piece3.index = 3;
       var piece4 = document.getElementById("piece4");
-      piece4.index = 4;
       var cursor = document.getElementById("cursor");
 
       var currentPiece = null;
@@ -155,7 +169,7 @@
           function placePieceOverHole(piece,hole){
             piece.style.top = hole.style.top;
             piece.style.left = hole.style.left;
-            piece.className = 'square'; //leave only this css class
+            piece.className = 'square piece'; //leave only this css classes
             currentPiece = null;
             correctPieces += 1;
             cursor.style.backgroundImage = "url('images/cursor.png')";
@@ -175,27 +189,29 @@
           }
 
           function loadPieces(){
-            var scrambledPieces = [piece1, piece2, piece3, piece4];
-            shuffleArray(scrambledPieces);
+            var pieces = document.getElementsByClassName('piece');
+            if(pieces.length > 0 && currentLevel <= levelQty)
+              for(var i=0;i<pieces.length;i++){
+               pieces[i].style.backgroundImage = "url('images/puzzles/"+currentLevel+".jpg')";
+             }    
 
-            scrambledPieces[0].style.top = 150 + "px";
-            scrambledPieces[0].style.left = 700 + "px";
-            scrambledPieces[0].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[0].index+".jpg')";
+             var scrambledPieces = [piece1, piece2, piece3, piece4];
+             shuffleArray(scrambledPieces);
 
-            scrambledPieces[1].style.top = 150 + "px";
-            scrambledPieces[1].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
-            scrambledPieces[1].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[1].index+".jpg')";
+             scrambledPieces[0].style.top = 150 + "px";
+             scrambledPieces[0].style.left = 700 + "px";
 
-            scrambledPieces[2].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
-            scrambledPieces[2].style.left = 700 + "px";
-            scrambledPieces[2].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[2].index+".jpg')";
+             scrambledPieces[1].style.top = 150 + "px";
+             scrambledPieces[1].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
 
-            scrambledPieces[3].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
-            scrambledPieces[3].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
-            scrambledPieces[3].style.backgroundImage = "url('images/level"+currentLevel+"/piece"+scrambledPieces[3].index+".jpg')";
-          }
+             scrambledPieces[2].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
+             scrambledPieces[2].style.left = 700 + "px";
 
-          function shuffleArray(o){
+             scrambledPieces[3].style.top = 150 + 210 + 10 + "px"; /* 210px image height + 10px vertical margin */
+             scrambledPieces[3].style.left = 700 + 210 + 10 + "px"; /* 210px image width + 10px horizontal margin */
+           }
+
+           function shuffleArray(o){
             for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
               return o;
           }

@@ -5,21 +5,23 @@
 <head>
     <meta charset="utf8">
     <title>Kids puzzle - Play with Leap Motion</title>
-    <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
+    <script src="http://js.leapmotion.com/leap-0.6.4.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
     <style>
         body {
             padding: 0;
             margin: 0;
         }
         
-        .hole{
+        .hole {
             border: 1px solid grey;
         }
-
-        .hole, .piece {
+        
+        .hole,
+        .piece {
             position: absolute;
         }
-
+        
         #piece1 {
             background-position: 0 0;
         }
@@ -48,22 +50,22 @@
             -webkit-filter: drop-shadow(0px 0px 10px #222);
             filter: drop-shadow(0px 0px 10px #222);
             background-image: url('images/cursor.png');
-            background-repeat:no-repeat;
+            background-repeat: no-repeat;
             background-size: contain;
-            position: absolute;
+            position: fixed;
         }
-
-        #congrats{
+        
+        #congrats {
             width: 100%;
             height: 100%;
             position: fixed;
             top: 0;
             left: 0;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             background-image: url('images/congrats.gif');
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-position: center; 
+            background-position: center;
             display: none;
         }
         
@@ -75,7 +77,7 @@
 </head>
 
 <body>
-    <h3>Hover over a piece to select it, then hover right where it should go<br/>Swipe left or right to switch between puzzles</h3>
+    <h3>Point over a piece to select it, then point right where it should go<br/>Swipe left or right to switch between puzzles</h3>
     <div id="hole1" class="hole"></div>
     <div id="hole2" class="hole"></div>
     <div id="hole3" class="hole"></div>
@@ -108,16 +110,16 @@
 
         var imageWidth = window.innerWidth * .4;
         var imageHeight = window.innerHeight * .6;
-        var pieceWidth = imageWidth/2;
-        var pieceHeight = imageHeight/2;
+        var pieceWidth = imageWidth / 2;
+        var pieceHeight = imageHeight / 2;
         var padding = 10;
 
-        var holesTopMargin = (window.innerHeight/2) - pieceHeight - padding;//150
-        var holesLeftMargin = (window.innerWidth/2) - pieceWidth*2 - padding;//150
-        var piecesTopMargin = (window.innerHeight/2) - pieceHeight - padding;//150
-        var piecesLeftMargin = (window.innerWidth/2) + padding;//700
+        var holesTopMargin = (window.innerHeight / 2) - pieceHeight - padding; //150
+        var holesLeftMargin = (window.innerWidth / 2) - pieceWidth * 2 - padding; //150
+        var piecesTopMargin = (window.innerHeight / 2) - pieceHeight - padding; //150
+        var piecesLeftMargin = (window.innerWidth / 2) + padding; //700
 
-        function loadHoles(){
+        function loadHoles() {
             hole1.style.top = holesTopMargin + "px";
             hole1.style.left = holesLeftMargin + "px";
 
@@ -136,6 +138,7 @@
             if (pieces.length > 0 && currentLevel <= levelQty)
                 for (var i = 0; i < pieces.length; i++) {
                     pieces[i].style.backgroundImage = "url('images/puzzles/" + currentLevel + ".jpg')";
+                    pieces[i].done = false;
                 }
 
             var scrambledPieces = [piece1, piece2, piece3, piece4];
@@ -154,6 +157,11 @@
             scrambledPieces[3].style.left = piecesLeftMargin + pieceWidth + padding + "px";
         }
 
+        function shuffleArray(o) {
+            for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+            return o;
+        }
+
         function updateCss() {
             cursor.style.width = window.innerWidth * .2 + "px";
             cursor.style.height = window.innerHeight * .2 + "px";
@@ -167,11 +175,6 @@
                     holes[i].style.width = pieceWidth + "px";
                     holes[i].style.height = pieceHeight + "px";
                 }
-        }
-
-        function shuffleArray(o) {
-            for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-            return o;
         }
 
         function checkPieces(x, y) {
@@ -195,9 +198,11 @@
         }
 
         function selectPiece(piece) {
-            currentPiece = piece;
-            piece.className += ' selected';
-            cursor.style.backgroundImage = "url('images/cursorAlt.png')";
+            if (!piece.done) {
+                currentPiece = piece;
+                piece.className += ' selected';
+                cursor.style.backgroundImage = "url('images/cursorAlt.png')";
+            }
         }
 
         function checkHoles(x, y) {
@@ -232,21 +237,24 @@
             piece.style.top = hole.style.top;
             piece.style.left = hole.style.left;
             piece.className = 'piece'; //leave only this css classes
+            piece.done = true;
             currentPiece = null;
             correctPieces += 1;
             cursor.style.backgroundImage = "url('images/cursor.png')";
         }
 
-        function nextLevel() {
+        function goToNextLevel() {
+            console.log("Next level");
             // go to next level
             var nextLevel = (currentLevel == levelQty) ? 1 : currentLevel + 1;
             goToLevel(nextLevel);
         }
 
-        function previousLevel() {
+        function goToPreviousLevel() {
+            console.log("Previous level");
             // go to previous level
-            var previousLevel = (currentLevel == 1) ? levelQty : currentLevel - 1;
-            goToLevel(previousLevel);
+            var goToPreviousLevel = (currentLevel == 1) ? levelQty : currentLevel - 1;
+            goToLevel(goToPreviousLevel);
         }
 
         function goToLevel(newLevel) {
@@ -256,34 +264,44 @@
             loadPieces();
         }
 
-        var controllerOptions = {
-            enableGestures: true
-        };
-        Leap.loop(controllerOptions, function(frame) {
+        function getExtendedFingers(frame) {
+            var extendedCount = 0;
+            frame.pointables.forEach(function(pointable) {
+                if (pointable.extended) extendedCount++;
+            });
+            return extendedCount;
+        }
 
-            if (frame.gestures.length > 0) {
-                for (var i = 0; i < frame.gestures.length; i++) {
-                    var gesture = frame.gestures[i];
-                    if (gesture.type == "swipe") {
-                        //Classify swipe as either horizontal or vertical
-                        var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
-                        //Classify as right or left
-                        if (isHorizontal) {
-                            if (gesture.direction[0] > 0) {
-                                // swipeDirection = "right";
-                                previousLevel();
-                            } else {
-                                // swipeDirection = "left";
-                                nextLevel();
-                            }
-                        }
-                    }
+        var controller = new Leap.Controller({
+            enableGestures: true
+        });
+        var swiper = controller.gesture('swipe');
+        var tolerance = 50;
+        var cooloff = 300;
+
+        var slider = _.debounce(function(xDir) {
+            if (xDir == 1) {
+                //swipeRight
+                goToPreviousLevel();
+            } else if (xDir == -1) {
+                //swipeLeft
+                goToNextLevel();
+            }
+        }, cooloff);
+        swiper.update(function(g) {
+            if (getExtendedFingers(controller.frame()) > 2) {
+                if (Math.abs(g.translation()[0]) > tolerance || Math.abs(g.translation()[1]) > tolerance) {
+                    var xDir = Math.abs(g.translation()[0]) > tolerance ? (g.translation()[0] > 0 ? -1 : 1) : 0;
+                    slider(xDir);
                 }
             }
+        });
+
+        controller.on('frame', function(frame) {
 
             var interactionBox = frame.interactionBox;
 
-            if (frame.pointables.length > 0) {
+            if (getExtendedFingers(frame) == 1) {
                 //Leap coordinates
                 var tipPosition = frame.pointables[0].tipPosition;
 
@@ -298,29 +316,33 @@
                 var x = windowPosition[0];
                 var y = windowPosition[1];
 
-                //Update cursor position
-                cursor.style.marginLeft = x + "px";
-                cursor.style.marginTop = y + "px";
-
                 if (currentPiece != null) {
+                    //Update cursor position
+                    cursor.style.left = x + "px";
+                    cursor.style.top = y + "px";
                     //Check whether the selected piece should go in the current hovering spot
                     checkHoles(x, y);
                 } else if (correctPieces < pieceQty) {
-                    //Show selected piece underneath cursor
-                    currentPiece.style.marginLeft = (x - Math.round(pieceWidth / 2)) + "px";
-                    currentPiece.style.marginTop = (y - Math.round(pieceHeight / 2)) + "px";
+                    //Update cursor position
+                    cursor.style.left = x + "px";
+                    cursor.style.top = y + "px";
                     //Check whether there's a piece to select in the current hovering spot
                     checkPieces(x, y);
-                } else if (correntPieces == pieceQty) {
+                } else if (correctPieces == pieceQty) {
                     congrats.style.display = "block";
-                    setTimeout(function(){
+                    var nextLevel = (currentLevel == levelQty) ? 1 : currentLevel + 1;
+                    setTimeout(function() {
                         congrats.style.display = "none";
-                        //Go to next level
-                        nextLevel();
-                    },3000); 
+                        // go to next level
+                        if (currentLevel != nextLevel)
+                            goToLevel(nextLevel);
+                    }, 2000);
                 }
             }
+
         });
+
+        controller.connect();
 
         window.onload = function() {
             loadHoles();
